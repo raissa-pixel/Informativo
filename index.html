@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo.png" type="image/png">
+
+<title>Aliança Suprema - Corridas</title>
+<style>
+/* === ESTILO GERAL === */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #000;
+  color: #fff;
+  text-align: center;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70') no-repeat center center fixed;
+  background-size: cover;
+  opacity: 0.2;
+  z-index: -1;
+}
+header {
+  background-color: #111;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  border-bottom: 3px solid red;
+}
+nav {
+  background-color: #222;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 10px;
+  flex-wrap: wrap;
+}
+nav a {
+  color: gold;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+nav a:hover {
+  color: red;
+}
+section {
+  display: none;
+  padding: 40px;
+  background: rgba(0,0,0,0.7);
+  margin: 20px auto;
+  width: 85%;
+  border-radius: 15px;
+  box-shadow: 0 0 10px red;
+  text-align: left;
+}
+.corridas-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 20px;
+}
+.corrida-card {
+  flex: 1 1 calc(33% - 20px);
+  background: rgba(0,0,0,0.6);
+  border: 2px solid red;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 0 10px red;
+  text-align: left;
+  min-width: 250px;
+  transition: transform 0.3s;
+}
+.corrida-card:hover {
+  transform: scale(1.05);
+}
+button {
+  background-color: red;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 10px 5px;
+}
+button:hover {
+  background-color: darkred;
+}
+input, textarea {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  width: 80%;
+  border-radius: 10px;
+  border: none;
+}
+.form-box {
+  display: none;
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+}
+.btn-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.team-member {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: gray;
+  margin: 5px;
+  overflow: hidden;
+}
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+}
+.login-box {
+  background: rgba(20,20,20,0.9);
+  padding: 40px;
+  border-radius: 20px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 0 20px #d4af37;
+}
+.tabs {
+  display:flex;
+  justify-content:space-around;
+  margin-bottom:20px;
+}
+.tab {
+  cursor:pointer;
+  padding:10px 20px;
+  border-bottom:3px solid transparent;
+  font-weight:bold;
+  color:#d4af37;
+  transition:0.3s;
+}
+.tab.active {
+  color:red;
+  border-color:red;
+}
+form {
+  display:none;
+  flex-direction:column;
+  gap:10px;
+}
+form.active {
+  display:flex;
+}
+
+/* CARROSSEL */
+.carousel {
+  position: relative;
+  max-width: 400px;
+  margin: 20px auto;
+  border: 2px solid red;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px red;
+  height: 250px; /* altura fixa para manter layout */
+}
+.carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+  border-radius: 10px;
+}
+.carousel img.active {
+  display: block;
+}
+.carousel button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,0,0,0.7);
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.carousel .prev { left: 10px; }
+.carousel .next { right: 10px; }
+
+/* CALCULADORA PILOTOS */
+.calc-box {
+  background: rgba(0,0,0,0.6);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.calc-box input {
+  width: 60%;
+  margin: 10px auto;
+}
+.calc-box button {
+  margin-top: 10px;
+}
+.result {
+  margin-top: 15px;
+  font-weight: bold;
+  color: gold;
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-container" id="loginPage">
+  <div class="login-box">
+    <h1>Aliança Suprema</h1>
+    <div class="tabs">
+      <div class="tab active" id="loginTab">Entrar</div>
+      <div class="tab" id="registerTab">Cadastrar</div>
+    </div>
+    <form id="loginForm" class="active">
+      <input type="email" id="loginEmail" placeholder="E-mail" required>
+      <input type="password" id="loginPassword" placeholder="Senha" required>
+      <button type="button" onclick="login()">Entrar</button>
+    </form>
+    <form id="registerForm">
+      <input type="text" id="registerName" placeholder="Nome completo" required>
+      <input type="email" id="registerEmail" placeholder="E-mail" required>
+      <input type="password" id="registerPassword" placeholder="Senha" required>
+      <button type="button" onclick="register()">Cadastrar</button>
+    </form>
+  </div>
+</div>
+
+<!-- SITE -->
+<div id="siteContent" style="display:none;">
+  <header>Aliança Suprema</header>
+  <nav>
+    <a href="#" onclick="showSection('empresa')">Sobre Nós</a>
+    <a href="#" onclick="showSection('corridas')">Corridas em Equipe</a>
+    <a href="#" onclick="showSection('equipes')">Corridas Individuais</a>
+    <a href="#" onclick="showSection('pilotos')">Pilotos</a>
+    <a href="#" onclick="logout()">Sair</a>
+  </nav>
+
+  <!-- SOBRE NÓS -->
+  <section id="empresa">
+    <h2>Sobre Nós</h2>
+    <p>
+      A <strong>Aliança Suprema</strong> nasceu da paixão por carros e corridas, unindo velocidade e criatividade. Nossa missão é informar e conectar fãs do mundo automotivo, trazendo notícias, análises e conteúdo sobre veículos, corridas e pilotos. Além disso, desenvolvemos carros e pistas inspirados nos elementos da natureza, tornando cada corrida única e cheia de personalidade.
+    </p>
+    <p>
+      Com uma equipe diversificada e talentosa, participamos de corridas em todo o Brasil, sempre buscando a excelência e o espírito esportivo.
+      Nosso compromisso é proporcionar experiências de corrida realistas, emocionantes e inesquecíveis para cada membro.
+    </p>
+    <p>
+      Aqui, cada volta é um desafio, cada curva uma conquista e cada vitória um símbolo da nossa união.
+      Seja bem-vindo à <strong>Aliança Suprema</strong> — onde a adrenalina encontra a perfeição.
+    </p>
+
+    <!-- CARROSSEL (AGORA COM <img src="..."> NO HTML) -->
+    <div class="carousel">
+      <button class="prev" onclick="mudarSlide(-1)">❮</button>
+
+      <!-- imagens locais adicionadas diretamente no HTML -->
+      <img id="slide1" class="active" src="Gemini_Generated_Image_5vp4uj5vp4uj5vp4.png" alt="Carro 1">
+      <img id="slide2" src="imagem 1.png" alt="Carro 2">
+      <img id="slide3" src="imagem 2.png" alt="Carro 3">
+      <img id="slide4" src="imagem 4  (1).png" alt="Carro 4">
+      <img id="slide5" src="imagem 4  (2).png" alt="Carro 5">
+
+      <button class="next" onclick="mudarSlide(1)">❯</button>
+    </div>
+  </section>
+
+  <!-- CORRIDAS EM EQUIPE -->
+  <section id="corridas">
+    <h2>Faça a inscrição da sua equipe!</h2>
+    <div id="listaCorridas" class="corridas-container">
+      <div class="corrida-card">
+        <h3>Corrida Water Fire</h3>
+        <p><strong>Canditados:</strong> 6 pilotos<br><strong>Elementos:</strong> Fogo e Água <br><strong>Data:</strong> 22/11/2025 20h</p>
+        <button onclick="abrirForm('Corrida Water Fire')">Inscreva-se</button>
+      </div>
+      <div class="corrida-card">
+        <h3>Corrida Tempestade</h3>
+        <p><strong>Canditados:</strong> 5 pilotos<br><strong>Elementos:</strong> Vento Forte<br><strong>Data:</strong> 29/11/2025 19h</p>
+        <button onclick="abrirForm('Corrida Tempestade')">Inscreva-se</button>
+  
+      </div>
+      <div class="corrida-card">
+        <h3>Corrida Aurora</h3>
+        <p><strong>Canditados:</strong> 6 pilotos <br><strong>Elementos:</strong> Vento e tempestade de gelo <br><strong>Data:</strong> 12/12/2025 21h</p>
+        <button onclick="abrirSlide('Corrida Aurora')">Inscreva-se</button>
+      </div>
+    </div>
+    <div id="formSolo" class="form-box">
+      <h3>Formulário de Inscrição</h3>
+      <input type="text" id="raceName" readonly>
+      <input type="text" id="driverName" placeholder="Nome dos pilotos">
+      <input type="text" id="driverCar" placeholder="Modelo do carro">
+      <button onclick="enviarInscricao()">Enviar</button>
+      <button onclick="voltarCorridas()">Voltar</button>
+    </div>
+  </section>
+
+  <!-- CORRIDAS INDIVIDUAIS -->
+  <section id="equipes">
+    <h2>Faça sua inscrição! </h2>
+    <div id="listaCorridasEquipe" class="corridas-container">
+      <div class="corrida-card">
+        <h3>Corrida Rally dos Ventos Uivantes</h3>
+        <p><strong>Tipo:</strong> Pista de terra, obstáculos naturais, fora de estrada<br><strong>Elementos:</strong> Ar e Tempestade <br><strong>Data:</strong> 25/01/2026 16h</p>
+        <button onclick="abrirFormEquipe('Corrida Rally dos Ventos Uivantes')">Inscreva-se</button>
+      </div>
+      <div class="corrida-card">
+        <h3>Corrida Desafio do Gelo Eterno</h3>
+        <p><strong>Tipo:</strong>Corrida curta, velocidade pura, pista reta<br><strong>Elementos:</strong> Gelo e Vento<br><strong>Data:</strong> 29/02/2026 19h</p>
+        <button onclick="abrirFormEquipe('Corrida Desafio do Gelo Eterno')">Inscreva-se</button>
+      </div>
+      <div class="corrida-card">
+        <h3>Corrida Vulcão de Fogo </h3>
+        <p><strong>Tipo:</strong> Percurso com obstáculos, combinações de elementos<br><strong>Elementos:</strong> Fogo e Terra<br><strong>Data:</strong> 15/03/2026 10h</p>
+        <button onclick="abrirFormEquipe('Corrida Vulcão de Fogo')">Inscreva-se</button>
+      </div>
+      <div class="corrida-card">
+        <h3>Corrida Tormenta de Areia Escarlate</h3>
+        <p><strong>Tipo:</strong> Pista com condições extremas (vento, tempestade, neve) - Rio<br><strong>Elementos:</strong> Terra, Ar e Fogo<br><strong>Data:</strong> 08/11/2025 18h</p>
+        <button onclick="abrirFormEquipe('Corrida Tormenta de Areia Escarlate')">Inscreva-se</button>
+      </div>
+      <div class="corrida-card">
+        <h3>Corrida Rally da Floresta Encantada</h3>
+        <p><strong>Tipo:</strong> Corrida longa com uma mistura de elementos <br><strong>Elementos:</strong> Planta, Água e Luz<br><strong>Data:</strong> 11/08/2026 11h</p>
+        <button onclick="abrirFormEquipe('Corrida Rally da Floresta Encantada')">Inscreva-se</button>
+      </div>
+    </div>
+    <div id="formEquipe" class="form-box">
+      <h3>Formulário de Inscrição</h3>
+      <input type="text" id="raceNameEquipe" readonly>
+      <input type="text" id="driverNameEquipe" placeholder="Nome do piloto">
+      <input type="text" id="driverCarEquipe" placeholder="Modelo do carro">
+      <button onclick="enviarInscricaoEquipe()">Enviar</button>
+      <button onclick="voltarCorridasEquipe()">Voltar</button>
+    </div>
+  </section>
+
+  <!-- PILOTOS -->
+  <section id="pilotos">
+    <h2>Calculadora de Combustível</h2>
+    <div class="calc-box">
+      <input type="text" id="pilotoNome" placeholder="Nome do piloto">
+      <input type="number" id="numVoltas" placeholder="Número de voltas" min="1">
+      <button onclick="calcularCombustivel()">Calcular Combustível</button>
+      <div class="result" id="resultadoCalc"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* === LOGIN/CADASTRO === */
+document.getElementById('loginTab').addEventListener('click', ()=>{
+  document.getElementById('loginForm').classList.add('active');
+  document.getElementById('registerForm').classList.remove('active');
+  document.getElementById('loginTab').classList.add('active');
+  document.getElementById('registerTab').classList.remove('active');
+});
+document.getElementById('registerTab').addEventListener('click', ()=>{
+  document.getElementById('registerForm').classList.add('active');
+  document.getElementById('loginForm').classList.remove('active');
+  document.getElementById('registerTab').classList.add('active');
+  document.getElementById('loginTab').classList.remove('active');
+});
+
+function login(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('siteContent').style.display='block';
+}
+
+function register(){
+  alert('Cadastro realizado!');
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('siteContent').style.display='block';
+}
+
+function logout(){
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('siteContent').style.display='none';
+}
+
+/* === NAVEGAÇÃO === */
+function showSection(id){
+  document.querySelectorAll('section').forEach(sec=>sec.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+
+/* === INSCRIÇÃO EM CORRIDAS EM EQUIPE === */
+function abrirForm(nome){
+  document.getElementById('listaCorridas').style.display='none';
+  document.getElementById('formSolo').style.display='block';
+  document.getElementById('raceName').value = nome;
+}
+function voltarCorridas(){
+  document.getElementById('formSolo').style.display='none';
+  document.getElementById('listaCorridas').style.display='flex';
+}
+function enviarInscricao(){
+  const piloto = document.getElementById('driverName').value;
+  const carro = document.getElementById('driverCar').value;
+  alert(`Piloto ${piloto} inscrito com o carro ${carro}!`);
+  voltarCorridas();
+}
+
+/* === INSCRIÇÃO EM CORRIDAS INDIVIDUAIS === */
+function abrirFormEquipe(nome){
+  document.getElementById('listaCorridasEquipe').style.display='none';
+  document.getElementById('formEquipe').style.display='block';
+  document.getElementById('raceNameEquipe').value = nome;
+}
+function voltarCorridasEquipe(){
+  document.getElementById('formEquipe').style.display='none';
+  document.getElementById('listaCorridasEquipe').style.display='flex';
+}
+function enviarInscricaoEquipe(){
+  const piloto = document.getElementById('driverNameEquipe').value;
+  const carro = document.getElementById('driverCarEquipe').value;
+  alert(`Piloto ${piloto} inscrito com o carro ${carro}!`);
+  voltarCorridasEquipe();
+}
+
+/* === CARROSSEL (imagens no HTML usando src="imagemX.png") === */
+let slideIndex = 0;
+const slidesEls = [
+  document.getElementById('slide1'),
+  document.getElementById('slide2'),
+  document.getElementById('slide3'),
+  document.getElementById('slide4'),
+  document.getElementById('slide5')
+];
+
+function atualizarSlides() {
+  slidesEls.forEach((el, i) => {
+    if(i === slideIndex) el.classList.add('active');
+    else el.classList.remove('active');
+  });
+}
+
+function mudarSlide(n){
+  slideIndex += n;
+  if(slideIndex >= slidesEls.length) slideIndex = 0;
+  if(slideIndex < 0) slideIndex = slidesEls.length - 1;
+  atualizarSlides();
+}
+
+/* === CALCULADORA PILOTOS === */
+function calcularCombustivel(){
+  const piloto = document.getElementById('pilotoNome').value;
+  const voltas = parseInt(document.getElementById('numVoltas').value);
+  if(!piloto || isNaN(voltas) || voltas <= 0){
+    alert('Preencha corretamente todos os campos!');
+    return;
+  }
+  const combustivelPorVolta = 5; // litros por volta como exemplo
+  const total = combustivelPorVolta * voltas;
+  document.getElementById('resultadoCalc').innerText = `${piloto} precisará de ${total} litros de combustível para ${voltas} voltas.`;
+}
+
+/* inicializa seção padrão e carrossel */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // mostra a seção 'empresa' por padrão quando o site for exibido
+  // (isso respeita seu comportamento original quando fizer login)
+  // atualizarSlides para garantir o estado inicial do carrossel
+  atualizarSlides();
+});
+</script>
+</body>
+</html>
